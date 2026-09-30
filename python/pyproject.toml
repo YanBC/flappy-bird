@@ -1,0 +1,14 @@
+[project]
+name = "flappy-rl"
+version = "0.1.0"
+description = "Gymnasium environment and RL training for the Godot Flappy Bird game"
+requires-python = ">=3.10"
+dependencies = [
+    "gymnasium>=1.0",
+    "numpy>=1.26",
+]
+
+[project.optional-dependencies]
+train = [
+    "stable-baselines3>=2.3",
+]

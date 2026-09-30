@@ -1,0 +1,5 @@
+# Godot editor/import cache
+.godot/
+
+# OS
+.DS_Store
