@@ -85,11 +85,35 @@ Godot through `$GODOT_BIN`, then `godot` on `PATH`, then
 
 ```sh
 cd python
-uv run check_env.py                                   # check the environment works
-uv run --extra train play.py                          # watch the included agent play
-uv run --extra train play.py --headless -n 20         # score it on 20 games
-uv run --extra train train.py --timesteps 1000000     # retrain from scratch
+uv sync --locked --extra train                                 # install exactly what uv.lock pins
+uv run --locked check_env.py                                   # check the environment works
+uv run --locked --extra train play.py                          # watch the included agent play
+uv run --locked --extra train play.py --headless -n 20         # score it on 20 games
+uv run --locked --extra train train.py --timesteps 1000000     # retrain from scratch
 ```
+
+### Reproducibility
+
+The results below were produced with these versions:
+
+| Component | Version | Pinned by |
+|---|---|---|
+| Godot | 4.7.2 | not pinned; install this version yourself |
+| Python | 3.14.7 | `python/.python-version` (`3.14`; uv downloads it if missing) |
+| torch, stable-baselines3, gymnasium, numpy, … | 2.14.0, 2.9.0, 1.3.0, 2.5.3, … | `python/uv.lock` (exact versions and sha256 hashes for macOS arm64, Linux and Windows) |
+
+- **Always pass `--locked`.** It makes uv fail if `pyproject.toml` and
+  `uv.lock` disagree, instead of silently re-resolving and updating the lock.
+- **Other Python versions:** `requires-python` allows 3.10+, but on 3.10 or
+  3.11 the lock selects a different numpy. Use 3.14 to match the results
+  exactly.
+- **Retraining:** training is seeded (`--seed`, default 0). On the same
+  machine and versions, two runs with the same seed produce bit-identical
+  weights. Other CPUs or operating systems may give slightly different
+  numbers, but training should reach similar scores.
+- **Adding or upgrading packages:** use `uv add <pkg>` or
+  `uv lock --upgrade-package <pkg>`, then commit `pyproject.toml` and
+  `uv.lock` together.
 
 `train.py` runs 8 headless Godot processes in parallel. It writes
 `models/best_model.zip` (best evaluation) and `models/ppo_flappy.zip` (final

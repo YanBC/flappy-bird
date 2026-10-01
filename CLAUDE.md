@@ -41,10 +41,10 @@ godot --path .                                        # play
 godot --headless --path . --quit-after 120            # smoke test: look for SCRIPT ERROR lines
 
 # Python (from python/)
-uv run check_env.py                                   # gymnasium check_env, scripted policy, steps/s, determinism
-uv run --extra train train.py --timesteps 1000000     # ~2 min
-uv run --extra train play.py --headless -n 20         # evaluate
-uv run --extra train play.py                          # windowed watch mode
+uv run --locked check_env.py                                # gymnasium check_env, scripted policy, steps/s, determinism
+uv run --locked --extra train train.py --timesteps 1000000     # ~2 min
+uv run --locked --extra train play.py --headless -n 20         # evaluate
+uv run --locked --extra train play.py                          # windowed watch mode
 ```
 
 To test the game without the Python stack, write a throwaway `extends SceneTree`
@@ -61,6 +61,11 @@ script in the project root. It should instantiate `res://main.tscn`, call
 - **Python:** type hints, Python >=3.10, Gymnasium API (5-tuple `step`).
   Keep runtime deps to `gymnasium` and `numpy`; training-only deps go in the
   `train` extra.
+- **Dependencies:** `uv.lock` and `.python-version` (3.14) pin the environment
+  used for the published results. Change deps only with `uv add` or
+  `uv lock --upgrade-package`, commit `pyproject.toml` and `uv.lock` together,
+  and run commands with `--locked`. Don't hand-edit `uv.lock`, and don't
+  replace it with a requirements.txt.
 - `python/.gdignore` must stay, so Godot doesn't scan `.venv`.
 - Commit `*.gd.uid` files. Don't commit `.godot/`.
 
